@@ -1,0 +1,124 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/* Custom CSS */
+
+* {
+    box-sizing: border-box;
+}
+
+h1 {
+    font-size: 2rem;
+}
+h2 {
+    font-size: 1.75rem;
+}
+h3 {
+    font-size: 1.5rem;
+}
+h4 {
+    font-size: 1.25rem;
+}
+h5 {
+    font-size: 1rem;
+}
+
+.title {
+    font-size: 5rem;
+    text-align: center;
+    color: #F9F0F0;
+    font-weight: 700;
+}
+
+.todo_field {
+    text-align: center;
+    width: 100%;
+}
+
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.flex {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.header_line {
+    font-size: .75rem;
+    color: rgb(109, 109, 109);
+    font-weight: 700;
+    text-align: center;
+    margin: 5px 0;
+}
+a {
+    text-decoration: none;
+    color: rgb(109, 109, 109);
+}
+.todo_text {
+    font-size: 1rem;
+
+}
+.todo_wrapper {
+    border: 1px solid rgb(161, 161, 161);
+
+}
+.todo_child {
+    border-bottom: 1px solid rgb(161, 161, 161);
+    padding: 5px;
+}
+
+.total, .active, .completed, .clear, .item_left {
+    margin: 5px;
+    border: 2px solid #fba0a0;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.strikeThrough {
+    text-decoration: line-through;
+    visibility: .5;
+}
