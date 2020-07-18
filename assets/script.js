@@ -1,87 +1,148 @@
-var input = document.querySelector(".todo_field");
+var inputText = document.querySelector(".todo_field");
 var ul = document.querySelector(".todo_wrapper");
 let clear = document.querySelector(".clear");
 let activeList = document.querySelector(".active");
 let completedList = document.querySelector(".completed");
 let totalList = document.querySelector(".total");
 let left = document.querySelector(".item_left");
+let ulFooter = document.querySelector(".footer");
+// store
+let id = 0;
 
-// var todos = [];
+let initialState = {
+  allTodos: [
+    { text: "Learn DOM", isDone: false, id: id++ },
+    { text: "Learn HTML", isDone: false, id: id++ },
+  ],
+  activeTab: "All",
+};
 
-
-let store = Redux.createStore(reducer);
-store.subscribe(createUI);
-
-input.addEventListener("keyup", (e) => {
-  if (e.keyCode === 13 && event.target.value.trim() !== "") {
-    let text = e.target.value;
-    store.dispatch({
-      type: "create",
-      text,
-    });
-    event.target.value = "";
-  }
+let rootReducer = Redux.combineReducers({
+  allTodos: allTodosReducer,
+  activeTab: allTodosReducer,
 });
 
-function createUI() {
-  ul.innerHTML = "";
-  const todos = store.getState();
-  todos.forEach((todo) => {
-    let li = document.createElement("li");
-    let p = document.createElement("p");
-    let span = document.createElement("span");
-    let flex = document.createElement('div');
-    let checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = todo.isDone;
-    p.classList.add("todo_text");
-    li.classList.add("todo_child");
-    flex.classList.add("flex");
-    span.innerText = "X";
-    span.addEventListener("click", () => {
-      store.dispatch({
-        type: "delete",
-        id: todo.id,
-      });
-    });
-    checkbox.addEventListener("click", () => {
-        console.log('checked');
-      if (todo.isDone) p.classList.add("strikeThrough");
-      store.dispatch({
-        type: "toggle",
-        id: todo.id,
-        isDone: todo.isDone,
-      });
-    });
+let { dispatch, getState, subscribe } = Redux.createStore(
+  rootReducer /* preloadedState */,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
+// Reducers
 
-    p.innerHTML = todo.text;
-    flex.append(checkbox, p, span);
-    li.append(flex);
+function allTodosReducer(state = initialState.allTodos, action) {
+  switch (action.type) {
+    case "ADD_TODOS":
+      return [...state, { text: action.payload, isDone: false, id: id++ }];
+
+    case "REMOVE_TODO":
+      return state.filter((todo) => todo.id !== action.payload);
+
+    case "TOGGLE_TODO":
+      return state.map((todo) => {
+        if (todo.id === action.payload) {
+          return {
+            ...todo,
+            isDone: !todo.isDone,
+          };
+        }
+        return todo;
+      });
+    default:
+      return state;
+  }
+}
+
+function activeTabReducer(state = initialState.activeTab, action) {
+  switch (action.type) {
+    case "CHANGE":
+      return action.payload;
+
+    default:
+      return state;
+  }
+}
+
+// Actions
+
+function createUI(root, data) {
+  root.innerHTML = "";
+  data.forEach((todo) => {
+    let li = document.createElement("li");
+    let label = document.createElement("label");
+    let span = document.createElement("span");
+    label.for = todo.id;
+    let input = document.createElement("input");
+    input.id = todo.id;
+    input.type = "checkbox";
+    input.checked = todo.isDone;
+    label.addEventListener("click", () => handleToggle(todo.id));
+    span.append(input, label);
+    let p = document.createElement("p");
+    p.innerText = todo.text;
+    let spanDel = document.createElement("span");
+    spanDel.innerText = "X";
+    spanDel.addEventListener("click", () => handleDelete(todo.id));
+
+    li.append(span, p, spanDel);
     ul.append(li);
   });
 }
 
-function reducer(state = [], action) {
-  switch (action.type) {
-    case "create": {
-      let newEntry = {
-        id: Date.now(),
-        text: action.text,
-        isDone: false,
-      };
-      return [...state, newEntry];
-    }
-    case "delete": {
-      return [...state.filter((todo) => !(todo.id == action.id))];
-    }
-    case "toggle": {
-        return state.map(todo => {
-            if (todo.id === action.id) {
-                todo.isDone = !todo.isDone;
-            }
-            return todo;
-        });
-    }
+let addTodoAction = (payload) => ({
+  type: "ADD_TODO",
+  payload,
+});
 
+let toggleTodoAction = (payload) => ({
+  type: "TOGGLE_TODO",
+  payload,
+});
+
+let removeTodoAction = (payload) => ({
+  type: "REMOVE_TODO",
+  payload,
+});
+
+let changeTabAction = (payload) => ({
+  type: "CHANGE",
+  payload,
+});
+
+// Methods
+
+function handleAddTodo({ target, keyCode }) {
+  if (keyCode === 13) {
+    dispatch(addTodoAction(target.value));
   }
 }
+
+function handleToggle(id) {
+  dispatch(toggleTodoAction(id));
+}
+
+function handleDelete(id) {
+  dispatch(removeTodoAction(id));
+}
+
+inputText.addEventListener("keyup", handleAddTodo);
+
+createUI(ul, getState().allTodos);
+function filterTodo(active, all) {
+  switch (active) {
+    case "Completed":
+      return all.filter((t) => t.isDone);
+    case "Active":
+      return all.filter((t) => !t.isDone);
+    default:
+      return all;
+  }
+}
+
+subscribe(() => createUI(ul, filterTodo(getState().allTodos)));
+
+function handleChange(newTab) {
+  dispatch(changeTabAction(newTab));
+}
+
+[...ulFooter.children].forEach((elm) =>
+  elm.addEventListener("click", ({ target }) => handleChange(target.innerText))
+);
