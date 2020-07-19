@@ -8,7 +8,6 @@ let left = document.querySelector(".item_left");
 let ulFooter = document.querySelector(".footer");
 // store
 let id = 0;
-
 let initialState = {
   allTodos: [
     { text: "Learn DOM", isDone: false, id: id++ },
@@ -16,7 +15,6 @@ let initialState = {
   ],
   activeTab: "All",
 };
-
 let rootReducer = Redux.combineReducers({
   allTodos: allTodosReducer,
   activeTab: allTodosReducer,
@@ -32,10 +30,8 @@ function allTodosReducer(state = initialState.allTodos, action) {
   switch (action.type) {
     case "ADD_TODOS":
       return [...state, { text: action.payload, isDone: false, id: id++ }];
-
     case "REMOVE_TODO":
       return state.filter((todo) => todo.id !== action.payload);
-
     case "TOGGLE_TODO":
       return state.map((todo) => {
         if (todo.id === action.payload) {
