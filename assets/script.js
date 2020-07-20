@@ -51,7 +51,6 @@ function activeTabReducer(state = initialState.activeTab, action) {
   switch (action.type) {
     case "CHANGE":
       return action.payload;
-
     default:
       return state;
   }
@@ -82,17 +81,14 @@ function createUI(root, data) {
     ul.append(li);
   });
 }
-
 let addTodoAction = (payload) => ({
   type: "ADD_TODO",
   payload,
 });
-
 let toggleTodoAction = (payload) => ({
   type: "TOGGLE_TODO",
   payload,
 });
-
 let removeTodoAction = (payload) => ({
   type: "REMOVE_TODO",
   payload,
@@ -110,11 +106,9 @@ function handleAddTodo({ target, keyCode }) {
     dispatch(addTodoAction(target.value));
   }
 }
-
 function handleToggle(id) {
   dispatch(toggleTodoAction(id));
 }
-
 function handleDelete(id) {
   dispatch(removeTodoAction(id));
 }
@@ -138,7 +132,6 @@ subscribe(() => createUI(ul, filterTodo(getState().allTodos)));
 function handleChange(newTab) {
   dispatch(changeTabAction(newTab));
 }
-
 [...ulFooter.children].forEach((elm) =>
   elm.addEventListener("click", ({ target }) => handleChange(target.innerText))
 );
