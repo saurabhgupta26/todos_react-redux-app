@@ -1,5 +1,5 @@
-var inputText = document.querySelector(".todo_field");
-var ul = document.querySelector(".todo_wrapper");
+const inputText = document.querySelector(".todo_field");
+const ul = document.querySelector(".todo_wrapper");
 let clear = document.querySelector(".clear");
 let activeList = document.querySelector(".active");
 let completedList = document.querySelector(".completed");
@@ -10,10 +10,10 @@ let ulFooter = document.querySelector(".footer");
 let id = 0;
 let initialState = {
   allTodos: [
-    { text: "Learn DOM", isDone: false, id: id++ },
-    { text: "Learn HTML", isDone: false, id: id++ },
+    // { text: "Learn DOM", isDone: false, id: id++ },
+    // { text: "Learn HTML", isDone: false, id: id++ },
   ],
-  activeTab: "All",
+  activeTab: "all",
 };
 let rootReducer = Redux.combineReducers({
   allTodos: allTodosReducer,
@@ -28,18 +28,17 @@ let { dispatch, getState, subscribe } = Redux.createStore(
 
 function allTodosReducer(state = initialState.allTodos, action) {
   switch (action.type) {
-    case "ADD_TODOS":
+    case "ADD_TODO":
       return [...state, { text: action.payload, isDone: false, id: id++ }];
     case "REMOVE_TODO":
       return state.filter((todo) => todo.id !== action.payload);
     case "TOGGLE_TODO":
+      console.log('toggle')
       return state.map((todo) => {
         if (todo.id === action.payload) {
-          return {
-            ...todo,
-            isDone: !todo.isDone,
-          };
-        }
+            isDone: !todo.isDone;
+            return todo;
+      };
         return todo;
       });
     default:
@@ -58,10 +57,13 @@ function activeTabReducer(state = initialState.activeTab, action) {
 
 // Actions
 
-function createUI(root, data) {
+function createUI(root, data = []) {
   root.innerHTML = "";
   data.forEach((todo) => {
+    console.log("create", todo);
+    let flex = document.createElement("div");
     let li = document.createElement("li");
+    flex.classList.add("flex");
     let label = document.createElement("label");
     let span = document.createElement("span");
     label.for = todo.id;
@@ -70,17 +72,18 @@ function createUI(root, data) {
     input.type = "checkbox";
     input.checked = todo.isDone;
     label.addEventListener("click", () => handleToggle(todo.id));
-    span.append(input, label);
+    label.append(input, span);
     let p = document.createElement("p");
     p.innerText = todo.text;
     let spanDel = document.createElement("span");
     spanDel.innerText = "X";
     spanDel.addEventListener("click", () => handleDelete(todo.id));
-
-    li.append(span, p, spanDel);
+    flex.append(label, p, spanDel);
+    li.append(flex);
     ul.append(li);
   });
 }
+
 let addTodoAction = (payload) => ({
   type: "ADD_TODO",
   payload,
@@ -103,10 +106,11 @@ let changeTabAction = (payload) => ({
 
 function handleAddTodo({ target, keyCode }) {
   if (keyCode === 13) {
-    dispatch(addTodoAction(target.value));
+    dispatch(addTodoAction(target.value));    
   }
 }
 function handleToggle(id) {
+  console.log(id, "handle");
   dispatch(toggleTodoAction(id));
 }
 function handleDelete(id) {
@@ -116,6 +120,7 @@ function handleDelete(id) {
 inputText.addEventListener("keyup", handleAddTodo);
 
 createUI(ul, getState().allTodos);
+
 function filterTodo(active, all) {
   switch (active) {
     case "Completed":
@@ -127,7 +132,9 @@ function filterTodo(active, all) {
   }
 }
 
-subscribe(() => createUI(ul, filterTodo(getState().allTodos)));
+subscribe(() =>
+  createUI(ul, filterTodo(getState().activeTab, getState().allTodos))
+);
 
 function handleChange(newTab) {
   dispatch(changeTabAction(newTab));
