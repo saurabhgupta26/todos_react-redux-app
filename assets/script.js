@@ -33,10 +33,11 @@ function allTodosReducer(state = initialState.allTodos, action) {
     case "REMOVE_TODO":
       return state.filter((todo) => todo.id !== action.payload);
     case "TOGGLE_TODO":
-      console.log('toggle')
+      // console.log('toggle')
       return state.map((todo) => {
-        if (todo.id === action.payload) {
-            isDone: !todo.isDone;
+        if (todo.id == action.payload) {
+          todo.isDone = !todo.isDone;
+          console.log(todo.isDone, todo.id);
             return todo;
       };
         return todo;
@@ -64,10 +65,10 @@ function createUI(root, data = []) {
     let flex = document.createElement("div");
     let li = document.createElement("li");
     flex.classList.add("flex");
-    let label = document.createElement("label");
     let span = document.createElement("span");
-    label.for = todo.id;
     let input = document.createElement("input");
+    let label = document.createElement("label");
+    label.for = todo.id;
     input.id = todo.id;
     input.type = "checkbox";
     input.checked = todo.isDone;
@@ -124,8 +125,12 @@ createUI(ul, getState().allTodos);
 function filterTodo(active, all) {
   switch (active) {
     case "Completed":
+      console.log("in complete");
       return all.filter((t) => t.isDone);
+
     case "Active":
+      console.log("in active");
+
       return all.filter((t) => !t.isDone);
     default:
       return all;
@@ -137,6 +142,7 @@ subscribe(() =>
 );
 
 function handleChange(newTab) {
+  console.log("handleChange");
   dispatch(changeTabAction(newTab));
 }
 [...ulFooter.children].forEach((elm) =>
